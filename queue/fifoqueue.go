@@ -5,7 +5,7 @@ import (
 )
 
 type QueueNode struct {
-	Payload int
+	Payload interface{}
 	Next *QueueNode
 	Prev *QueueNode
 }
@@ -16,7 +16,7 @@ type FifoQueue struct {
 	length uint
 }
 
-func (q *FifoQueue) Insert(payload int) {
+func (q *FifoQueue)Insert(payload interface{}) {
 	var node QueueNode
 	node.Payload = payload
 	q.length += 1
@@ -32,7 +32,7 @@ func (q *FifoQueue) Insert(payload int) {
 	}
 }
 
-func (q *FifoQueue) Pop() (int, error) {
+func (q *FifoQueue)Pop() (interface{}, error) {
 	var value int
 	if q.tail == nil {
 		return value, errors.New("NoElementsInQueue")
@@ -53,12 +53,12 @@ func (q *FifoQueue) Pop() (int, error) {
 	return target.Payload, nil
 }
 
-func (q *FifoQueue) Length() uint {
+func (q *FifoQueue)Length() uint {
 	return q.length
 }
 
-func (q *FifoQueue) Values() []int {
-	var values []int
+func (q *FifoQueue) Values() []interface{} {
+	var values []interface{}
 	if q.head == nil {
 		return values
 	}
@@ -72,6 +72,6 @@ func (q *FifoQueue) Values() []int {
 	return values
 }
 
-func (q *FifoQueue) IsEmpty() bool {
+func (q *FifoQueue)IsEmpty() bool {
 	return q.length == 0
 }
