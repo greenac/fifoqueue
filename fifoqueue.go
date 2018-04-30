@@ -24,14 +24,19 @@ type FifoQueue struct {
 }
 
 func (q *FifoQueue)Insert(payload interface{}) *QueueNode {
-	var node QueueNode
-	node.Payload = payload
+	node := QueueNode{Payload: payload}
 	q.length += 1
 
+	logger.Warn("In fifo queue insert function")
 	if q.head == nil {
 		q.head = &node
 		q.tail = &node
 	} else {
+		if q.tail == nil {
+			logger.Error("The tail is nil!!! holy shit")
+			logger.Error("Meanwhile the head is:", q.head)
+		}
+
 		tempTailPtr := q.tail
 		tempTailPtr.Next = &node
 		node.Prev = tempTailPtr
@@ -151,43 +156,36 @@ func (q *FifoQueue) AsSlice() *[]*QueueNode {
 }
 
 func (q *FifoQueue) Delete(n *QueueNode) bool {
-	logger.Log("looking for node:", n)
 	node := q.head
 	for node != nil {
-		logger.Log("looking at node:", node);
 		if n == node {
 			break
 		}
 
 		node = node.Next
 	}
-
-	logger.Log("found target node:", node)
+	
 	if node == nil {
 		return false
 	}
 
-	logger.Log("Target node:", )
-
-
-	if node.Prev == nil && node.Next == nil {
+	if node == q.head && node == q.tail {
 		q.head = nil
 		q.tail = nil
+	} else if node == q.head {
+		node.Next.Prev = nil
+		q.head = node.Next
+		node.Next = nil
 	} else if node == q.tail {
+		node.Prev.Next = nil
 		q.tail = node.Prev
-	} else if node.Prev != nil && node.Next != nil {
+		node.Prev = nil
+	} else {
 		node.Prev.Next = node.Next
 		node.Next.Prev = node.Prev
-	} else if node.Prev == nil {
-		node.Next.Prev = nil
-	} else {
-		node.Prev.Next = nil
 	}
 
-	node.Next = nil
-	node.Prev = nil
 	node = nil
-
 	q.length -= 1
 
 	return true
