@@ -161,8 +161,7 @@ func (q *FifoQueue) Delete(n *QueueNode) bool {
 
 		node = node.Next
 	}
-
-	logger.Log("found target node:", node)
+	
 	if node == nil {
 		return false
 	}
